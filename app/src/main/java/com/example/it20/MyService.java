@@ -24,7 +24,7 @@ import android.util.Log;
 
 public class MyService extends Service {
 
-    public static String isStarted, startedApp, reBoot;
+    public static String isStarted, startedApp;
     public static int faceDHours, faceDMinutes, faceDSeconds,
             twitDHours, twitDMinutes, twitDSeconds,
             instDHours, instDMinutes, instDSeconds,
@@ -74,7 +74,7 @@ public class MyService extends Service {
         vkDHours = Integer.parseInt(sharedPreferences.getString("vkHours", "0"));
         vkDMinutes = Integer.parseInt(sharedPreferences.getString("vkMinutes", "0"));
         vkDSeconds = Integer.parseInt(sharedPreferences.getString("vkSeconds", "0"));
-        Log.d("myLogs","load");
+
         serviceDSeconds = Integer.parseInt(sharedPreferences.getString("servicesec", "0"));
         serviceDMinutes = Integer.parseInt(sharedPreferences.getString("servicemin", "0"));
         serviceDHours = Integer.parseInt(sharedPreferences.getString("servicehour", "0"));
@@ -86,10 +86,6 @@ public class MyService extends Service {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        reBoot = sharedPreferences.getString("reBoot", "false");
-        if (reBoot.isEmpty()) {
-            SavePreferences("reBoot", "false");
-        }
         Log.d("myLogs","onCreate");
         String uxo=sharedPreferences.getString("compoundButton", "false");
         if(!uxo.equals("false")) showNotification("m");
@@ -98,6 +94,7 @@ public class MyService extends Service {
     @SuppressLint({"HandlerLeak", "SimpleDateFormat"})
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("myLogs","onStartCommand");
         super.onStartCommand(intent, flags, startId);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         serviceControler = new Handler() {
@@ -106,7 +103,9 @@ public class MyService extends Service {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 try {
-
+                    if(isStarted.equals("false")){
+                     stopSelf();
+                    }
                     LoadPreferences();
                     SavePreferences("allSocials", String.valueOf((faceDHours + twitDHours + instDHours + vkDHours +
                             ( (double) (faceDMinutes + twitDMinutes + instDMinutes + vkDMinutes) / 60) +
@@ -261,12 +260,11 @@ public class MyService extends Service {
 
     public void onDestroy() {
         super.onDestroy();
-
         String close = sharedPreferences.getString("InTheEnd", "no");
-        Log.d("myLogs","onDestroy");
+
         if (isStarted.equals("true") && close.equals("no")) {
             nm.cancelAll();
-            startService(new Intent(MyService.this, MyService.class));
+                //startService(new Intent(MyService.this, MyService.class));
 
         } else if (isStarted.equals("true") && close.equals("yes")) {
 
@@ -276,7 +274,7 @@ public class MyService extends Service {
 
             nm.cancelAll();
         }
-
+        stopSelf();
     }
 
     public void SavePreferences(String key, String value) {

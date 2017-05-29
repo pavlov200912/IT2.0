@@ -37,7 +37,13 @@ public class Tab1Fragment extends Fragment {
     SharedPreferences sharedPreferences;
     CompoundButton compoundButton;
     private static final String TAG="Tab1Fragment";
-    private Button btnTEST;
+
+    @Override
+    public void onResume() {
+        LoadPreferences();
+        super.onResume();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -73,7 +79,6 @@ public class Tab1Fragment extends Fragment {
                     Log.d("myLogs","Clicked");
                     SavePreferences("compoundButton", "true");
                     Intent intent = new Intent(getActivity(), MyService.class);
-                    getActivity().startService(intent);
                     getActivity().startService(intent);
                     Toast.makeText(getActivity(), "InternetTime запущено", Toast.LENGTH_SHORT).show();
                 } else {
