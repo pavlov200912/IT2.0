@@ -28,13 +28,14 @@ public class Tab2Fragment extends Fragment {
 
     private Button bClear;
     int inService;
+    public RelativeLayout rel;
     public static int faceDHours, faceDMinutes, faceDSeconds,
             twitDHours, twitDMinutes, twitDSeconds,
             instDHours, instDMinutes, instDSeconds,
             vkDHours, vkDMinutes, vkDSeconds;
     TextView facebookTextHour, twitterTextHour, instagramTextHour, vkontakteTextHour, facebookTextMin,
             twitterTextMin, instagramTextMin, vkontakteTextMin, facebookTextSec, twitterTextSec,
-            instagramTextSec, vkontakteTextSec;
+            instagramTextSec, vkontakteTextSec,s1,s2,s3;
     private ImageView mImage1,mImage2,mImage3,mImage4;
     long i1,i2,i3,i4;
     long a[]= new long[4];
@@ -59,6 +60,12 @@ public class Tab2Fragment extends Fragment {
         vkontakteTextHour = (TextView) view.findViewById(R.id.vkontakte1);
         vkontakteTextMin = (TextView) view.findViewById(R.id.vkontakte2);
         vkontakteTextSec = (TextView) view.findViewById(R.id.vkontakte3);
+
+        s1 = (TextView) view.findViewById(R.id.textView);
+        s2 = (TextView) view.findViewById(R.id.textView5);
+        s3 = (TextView) view.findViewById(R.id.textView3);
+
+        rel=(RelativeLayout)view.findViewById(R.id.rel1);
 
         totalAllText = (TextView) view.findViewById(R.id.textView15);
         myStatementNow = (TextView) view.findViewById(R.id.textView13);
@@ -121,6 +128,7 @@ public class Tab2Fragment extends Fragment {
         mImage2 = (ImageView) view.findViewById(R.id.imageView6);
         mImage3 = (ImageView) view.findViewById(R.id.imageView7);
         mImage4 = (ImageView) view.findViewById(R.id.imageView8);
+        //TODO переделать
         i1=faceDHours*3600+faceDMinutes*60+faceDSeconds;
         i2=twitDHours*3600+twitDMinutes*60+twitDSeconds;
         i3=instDHours*3600+instDMinutes*60+instDSeconds;
@@ -240,20 +248,64 @@ public class Tab2Fragment extends Fragment {
             SavePreferences("myStatementNow", "low");
         }
         myCondition = sharedPreferences.getString("myStatementNow", "low");
-
+            //TODO Add colors
         if (myCondition.equals("low")) {
             myStatementNow.setText("Низкий");
+            myStatementNow.setTextColor(Color.parseColor("#ffffff"));
+            totalAllText.setTextColor(Color.parseColor("#ffffff"));
+            useForDay.setTextColor(Color.parseColor("#ffffff"));
+            s1.setTextColor(Color.parseColor("#ffffff"));
+            s2.setTextColor(Color.parseColor("#ffffff"));
+            s3.setTextColor(Color.parseColor("#ffffff"));
+            rel.setBackgroundColor(Color.parseColor("#2e7d32"));
         } else if (myCondition.equals("Average")) {
             myStatementNow.setText("Ненормальный");
+            myStatementNow.setTextColor(Color.parseColor("#ffffff"));
+            totalAllText.setTextColor(Color.parseColor("#ffffff"));
+            useForDay.setTextColor(Color.parseColor("#ffffff"));
+            s1.setTextColor(Color.parseColor("#ffffff"));
+            s2.setTextColor(Color.parseColor("#ffffff"));
+            s3.setTextColor(Color.parseColor("#ffffff"));
+           rel.setBackgroundColor(Color.parseColor("#6c6f00"));
         } else if (myCondition.equals("attention")) {
             myStatementNow.setText("Внимание");
+            myStatementNow.setTextColor(Color.parseColor("#000000"));
+            totalAllText.setTextColor(Color.parseColor("#000000"));
+            useForDay.setTextColor(Color.parseColor("#000000"));
+            s1.setTextColor(Color.parseColor("#000000"));
+            s2.setTextColor(Color.parseColor("#000000"));
+            s3.setTextColor(Color.parseColor("#000000"));
+           rel.setBackgroundColor(Color.parseColor("#ff833a"));
         } else if (myCondition.equals("Addicted")) {
             myStatementNow.setText("Зависимость");
+            myStatementNow.setTextColor(Color.parseColor("#000000"));
+            totalAllText.setTextColor(Color.parseColor("#000000"));
+            useForDay.setTextColor(Color.parseColor("#000000"));
+            s1.setTextColor(Color.parseColor("#000000"));
+            s2.setTextColor(Color.parseColor("#000000"));
+            s3.setTextColor(Color.parseColor("#000000"));
+            rel.setBackgroundColor(Color.parseColor("#e65100"));
         } else if (myCondition.equals("DANGER")) {
             myStatementNow.setText("Опасность");
+            myStatementNow.setTextColor(Color.parseColor("#ffffff"));
+            totalAllText.setTextColor(Color.parseColor("#ffffff"));
+            useForDay.setTextColor(Color.parseColor("#ffffff"));
+            s1.setTextColor(Color.parseColor("#ffffff"));
+            s2.setTextColor(Color.parseColor("#ffffff"));
+            s3.setTextColor(Color.parseColor("#ffffff"));
+            rel.setBackgroundColor(Color.parseColor("#dd2c00"));
         } else {
             myStatementNow.setText("Стандартный");
+            myStatementNow.setTextColor(Color.parseColor("#ffffff"));
+            totalAllText.setTextColor(Color.parseColor("#ffffff"));
+            useForDay.setTextColor(Color.parseColor("#ffffff"));
+            s1.setTextColor(Color.parseColor("#ffffff"));
+            s2.setTextColor(Color.parseColor("#ffffff"));
+            s3.setTextColor(Color.parseColor("#ffffff"));
+            rel.setBackgroundColor(Color.parseColor("#2e7d32"));
         }
+
+
 
         if (allSocials.isEmpty()) {
             SavePreferences("allSocials", "0 Часов");

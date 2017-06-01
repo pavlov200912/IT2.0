@@ -22,15 +22,14 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 public class MyService extends Service {
+    private static final int nSocials=4;
 
     public static String isStarted, startedApp;
-    public static int faceDHours, faceDMinutes, faceDSeconds,
-            twitDHours, twitDMinutes, twitDSeconds,
-            instDHours, instDMinutes, instDSeconds,
-            vkDHours, vkDMinutes, vkDSeconds,
-            serviceDHours, serviceDMinutes, serviceDSeconds;
-
+    public static int serviceDHours, serviceDMinutes, serviceDSeconds;
+    public static ArrayList<Integer> iSocials=new ArrayList<>();
 
     int isFirstFacebook, isFirstTwitter, isFirstInstagram, isFirstVkontakte;
     double condition;
@@ -59,21 +58,22 @@ public class MyService extends Service {
 
         isStarted = sharedPreferences.getString("compoundButton", "false");
 
-        faceDHours = Integer.parseInt(sharedPreferences.getString("faceHours", "0"));
-        faceDMinutes = Integer.parseInt(sharedPreferences.getString("faceMinutes", "0"));
-        faceDSeconds = Integer.parseInt(sharedPreferences.getString("faceSeconds", "0"));
 
-        twitDHours = Integer.parseInt(sharedPreferences.getString("twitHours", "0"));
-        twitDMinutes = Integer.parseInt(sharedPreferences.getString("twitMinutes", "0"));
-        twitDSeconds = Integer.parseInt(sharedPreferences.getString("twitSeconds", "0"));
+        iSocials.add(Integer.parseInt(sharedPreferences.getString("faceHours", "0")));
+        iSocials.add(Integer.parseInt(sharedPreferences.getString("faceMinutes", "0")));
+        iSocials.add(Integer.parseInt(sharedPreferences.getString("faceSeconds", "0")));
 
-        instDHours = Integer.parseInt(sharedPreferences.getString("instaHours", "0"));
-        instDMinutes = Integer.parseInt(sharedPreferences.getString("instaMinutes", "0"));
-        instDSeconds = Integer.parseInt(sharedPreferences.getString("instaSeconds", "0"));
+        iSocials.add(Integer.parseInt(sharedPreferences.getString("twitHours", "0")));
+        iSocials.add(Integer.parseInt(sharedPreferences.getString("twitMinutes", "0")));
+        iSocials.add(Integer.parseInt(sharedPreferences.getString("twitSeconds", "0")));
 
-        vkDHours = Integer.parseInt(sharedPreferences.getString("vkHours", "0"));
-        vkDMinutes = Integer.parseInt(sharedPreferences.getString("vkMinutes", "0"));
-        vkDSeconds = Integer.parseInt(sharedPreferences.getString("vkSeconds", "0"));
+        iSocials.add(Integer.parseInt(sharedPreferences.getString("instaHours", "0")));
+        iSocials.add(Integer.parseInt(sharedPreferences.getString("instaMinutes", "0")));
+        iSocials.add(Integer.parseInt(sharedPreferences.getString("instaSeconds", "0")));
+
+        iSocials.add(Integer.parseInt(sharedPreferences.getString("vkHours", "0")));
+        iSocials.add(Integer.parseInt(sharedPreferences.getString("vkMinutes", "0")));
+        iSocials.add(Integer.parseInt(sharedPreferences.getString("vkSeconds", "0")));
 
         serviceDSeconds = Integer.parseInt(sharedPreferences.getString("servicesec", "0"));
         serviceDMinutes = Integer.parseInt(sharedPreferences.getString("servicemin", "0"));
@@ -107,9 +107,9 @@ public class MyService extends Service {
                      stopSelf();
                     }
                     LoadPreferences();
-                    SavePreferences("allSocials", String.valueOf((faceDHours + twitDHours + instDHours + vkDHours +
-                            ( (double) (faceDMinutes + twitDMinutes + instDMinutes + vkDMinutes) / 60) +
-                            ( (double) (faceDSeconds + twitDSeconds + instDSeconds + vkDSeconds) / 3600))));
+                    SavePreferences("allSocials", String.valueOf((iSocials.get(0) + iSocials.get(3) +iSocials.get(6) +iSocials.get(9)+
+                            ( (double) (iSocials.get(0+1) + iSocials.get(3+1) +iSocials.get(6+1) +iSocials.get(9+1)) / 60) +
+                            ( (double) (iSocials.get(0+2) + iSocials.get(3+2) +iSocials.get(6+2) +iSocials.get(9+2)) / 3600))));
                     serviceDSeconds++;
 
                     if (serviceDSeconds >= 60) {
@@ -127,9 +127,9 @@ public class MyService extends Service {
                     SavePreferences("servicesec", String.valueOf(serviceDSeconds));
                     SavePreferences("servicemin", String.valueOf(serviceDMinutes));
                     SavePreferences("servicehour", String.valueOf(serviceDHours));
-                    condition = ( (faceDHours + twitDHours + instDHours + vkDHours)*3600 +
-                            (faceDMinutes + twitDMinutes + instDMinutes + vkDMinutes) * 60 +
-                            (faceDSeconds + twitDSeconds + instDSeconds + vkDSeconds) ) /
+                    condition = ( (iSocials.get(0) + iSocials.get(3) +iSocials.get(6) +iSocials.get(9))*3600 +
+                            (iSocials.get(0+1) + iSocials.get(3+1) +iSocials.get(6+1) +iSocials.get(9+1)) * 60 +
+                            (iSocials.get(0+2) + iSocials.get(3+2) +iSocials.get(6+2) +iSocials.get(9+2)) ) /
                             (double) (serviceDHours*3600+serviceDMinutes*60+serviceDSeconds);
 
                 } catch (NullPointerException nullPointerException) {
@@ -314,7 +314,7 @@ public class MyService extends Service {
 
             if (facebookB = true) {
 
-                setChangeTime(faceDSeconds,faceDMinutes,faceDHours,"faceSeconds","faceMinutes","faceHours");
+                setChangeTime(0,1,2,"faceSeconds","faceMinutes","faceHours");
                 faceControl.postDelayed(this, 0);
 
             }
@@ -334,7 +334,7 @@ public class MyService extends Service {
 
             if (twitterB = true) {
 
-                setChangeTime(twitDSeconds,twitDMinutes,twitDHours,"twitSeconds","twitMinutes","twitHours");
+                setChangeTime(0+3,1+3,2+3,"twitSeconds","twitMinutes","twitHours");
                 twitControl.postDelayed(this, 0);
 
             }
@@ -353,7 +353,7 @@ public class MyService extends Service {
             }
 
             if (instagramB = true) {
-                setChangeTime(instDSeconds,instDMinutes,instDHours,"instaSeconds","instaMinutes","instaHours");
+                setChangeTime(3+3,4+3,5+3,"instaSeconds","instaMinutes","instaHours");
                 instControl.postDelayed(this, 0);
 
             }
@@ -375,7 +375,7 @@ public class MyService extends Service {
 
             if (vkontakteB = true) {
 
-                setChangeTime(vkDSeconds,vkDMinutes,vkDHours,"vkSeconds","vkMinutes","vkHours");
+                setChangeTime(6+3,7+3,8+3,"vkSeconds","vkMinutes","vkHours");
                 vkControl.postDelayed(this, 0);
 
             }
@@ -383,37 +383,38 @@ public class MyService extends Service {
 
     };
 
-    private  void setChangeTime(int sec,int min,int hou,String nameS,String nameM,String nameH){
-        sec++;
-        if(sec>=60){
-            sec=0;
-            min++;
+    private  void setChangeTime(int hou,int min,int sec,String nameS,String nameM,String nameH){
+
+        iSocials.set(sec,iSocials.get(sec)+1);
+        if(iSocials.get(sec)>=60){
+            iSocials.set(sec,0);
+            iSocials.set(min,iSocials.get(min)+1);
         }
-        if(min>=60){
-            min=0;
-            hou++;
+        if(iSocials.get(min)>=60){
+            iSocials.set(min,0);
+            iSocials.set(hou,iSocials.get(hou)+1);
         }
-        if (sec < 10) {
-            SavePreferences(nameS, "0"+sec);
+        if (iSocials.get(sec) < 10) {
+            SavePreferences(nameS, "0"+iSocials.get(sec));
         }
 
-        if (min < 10) {
-            SavePreferences(nameM, "0"+min);
+        if (iSocials.get(min) < 10) {
+            SavePreferences(nameM, "0"+iSocials.get(min));
         }
 
-        if (hou < 10) {
-            SavePreferences(nameH, "0"+hou);
+        if (iSocials.get(hou) < 10) {
+            SavePreferences(nameH, "0"+iSocials.get(hou));
         }
-        if(sec>=10)
+        if(iSocials.get(sec)>=10)
         {
-            SavePreferences(nameS, ""+sec);
+            SavePreferences(nameS, ""+iSocials.get(sec));
         }
-        if (min >= 10) {
-            SavePreferences(nameM, ""+min);
+        if (iSocials.get(min) >= 10) {
+            SavePreferences(nameM, ""+iSocials.get(min));
         }
 
-        if (hou >= 10) {
-            SavePreferences(nameH, ""+hou);
+        if (iSocials.get(hou) >= 10) {
+            SavePreferences(nameH, ""+iSocials.get(hou));
         }
     }
 }
