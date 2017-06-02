@@ -24,6 +24,7 @@ import android.widget.Toast;
  */
 
 public class Tab1Fragment extends Fragment {
+    boolean isFirst=true;
     TextView facebookTextHour, twitterTextHour, instagramTextHour, vkontakteTextHour, facebookTextMin,
             twitterTextMin, instagramTextMin, vkontakteTextMin, facebookTextSec, twitterTextSec,
             instagramTextSec, vkontakteTextSec;
@@ -67,14 +68,40 @@ public class Tab1Fragment extends Fragment {
         } else {
             compoundButton = (CheckBox) view.findViewById(R.id.startButton);
         }
+        if(isFirst){
+            isFirst=false;
+            SavePreferences("compoundButton", "false");
+            SavePreferences("compoundButton", "false");
+            SavePreferences("myStatementNow", "low");
+            SavePreferences("allSocials", "0");
 
+            SavePreferences("servicehour", "0");
+            SavePreferences("servicemin", "0");
+            SavePreferences("servicesec", "0");
+
+            isEmpty(faceSeconds,facebookTextSec,"faceSeconds");
+            isEmpty(faceMinutes,facebookTextMin,"faceMinutes");
+            isEmpty(faceHours,facebookTextHour,"faceHour");
+
+            isEmpty(twitSeconds,twitterTextSec,"twitSeconds");
+            isEmpty(twitMinutes,twitterTextMin,"twitMinutes");
+            isEmpty(twitHours,twitterTextHour,"twitHour");
+
+            isEmpty(instaSeconds,instagramTextSec,"instaSeconds");
+            isEmpty(instaMinutes,instagramTextMin,"instaMinutes");
+            isEmpty(instaHours,instagramTextHour,"instaHour");
+
+            isEmpty(vkSeconds,vkontakteTextSec,"vkSeconds");
+            isEmpty(vkMinutes,vkontakteTextMin,"vkMinutes");
+            isEmpty(vkHours,vkontakteTextHour,"vkHour");
+
+        }
         LoadPreferences();
 
         compoundButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton myButton, boolean isSwitched) {
-
                 if (isSwitched == true) {
                     Log.d("myLogs","Clicked");
                     SavePreferences("compoundButton", "true");

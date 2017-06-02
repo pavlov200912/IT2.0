@@ -11,8 +11,6 @@ import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,16 +21,13 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 public class MyService extends Service {
     private static final int nSocials=4;
-
+    boolean isFirst=true;
     public static String isStarted, startedApp;
     public static int serviceDHours, serviceDMinutes, serviceDSeconds;
     public static ArrayList<Integer> iSocials=new ArrayList<>();
@@ -62,24 +57,44 @@ public class MyService extends Service {
 
     public void LoadPreferences() {
 
+
         isStarted = sharedPreferences.getString("compoundButton", "false");
 
+        if(isFirst) {
+            isFirst=false;
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("faceHours", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("faceMinutes", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("faceSeconds", "0")));
 
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("faceHours", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("faceMinutes", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("faceSeconds", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("twitHours", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("twitMinutes", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("twitSeconds", "0")));
 
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("twitHours", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("twitMinutes", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("twitSeconds", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("instaHours", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("instaMinutes", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("instaSeconds", "0")));
 
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("instaHours", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("instaMinutes", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("instaSeconds", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("vkHours", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("vkMinutes", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("vkSeconds", "0")));
+        }
+        else{
+            iSocials.set(0,Integer.parseInt(sharedPreferences.getString("faceHours", "0")));
+            iSocials.set(1,Integer.parseInt(sharedPreferences.getString("faceMinutes", "0")));
+            iSocials.set(2,Integer.parseInt(sharedPreferences.getString("faceSeconds", "0")));
 
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("vkHours", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("vkMinutes", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("vkSeconds", "0")));
+            iSocials.set(3,Integer.parseInt(sharedPreferences.getString("twitHours", "0")));
+            iSocials.set(4,Integer.parseInt(sharedPreferences.getString("twitMinutes", "0")));
+            iSocials.set(5,Integer.parseInt(sharedPreferences.getString("twitSeconds", "0")));
+
+            iSocials.set(6,Integer.parseInt(sharedPreferences.getString("instaHours", "0")));
+            iSocials.set(7,Integer.parseInt(sharedPreferences.getString("instaMinutes", "0")));
+            iSocials.set(8,Integer.parseInt(sharedPreferences.getString("instaSeconds", "0")));
+
+            iSocials.set(9,Integer.parseInt(sharedPreferences.getString("vkHours", "0")));
+            iSocials.set(10,Integer.parseInt(sharedPreferences.getString("vkMinutes", "0")));
+            iSocials.set(11,Integer.parseInt(sharedPreferences.getString("vkSeconds", "0")));
+        }
 
         serviceDSeconds = Integer.parseInt(sharedPreferences.getString("servicesec", "0"));
         serviceDMinutes = Integer.parseInt(sharedPreferences.getString("servicemin", "0"));
@@ -89,10 +104,10 @@ public class MyService extends Service {
 
     @Override
     public void onCreate() {
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        LoadPreferences();
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Log.d("myLogs","onCreate");
+        Log.d("myLogs",isStarted);
         String uxo=sharedPreferences.getString("compoundButton", "false");
         if(!uxo.equals("false")) showNotification("m");
     }
@@ -179,7 +194,7 @@ public class MyService extends Service {
                     }
                 }
 
-                if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                if(android.os.Build.VERSION.SDK_INT >= 21) {
                     final int PROCESS_STATE_TOP = 2;
                     ActivityManager.RunningAppProcessInfo currentInfo = null;
                     Field field = null;
@@ -244,7 +259,7 @@ public class MyService extends Service {
 
     public void func1(String startedApp) {
         if (isStarted.equals("true")) {
-            if (startedApp.equals("com.facebook.katana") || startedApp.equals("com.facebook.lite")) {
+            if (startedApp.equals("com.facebook.katana") || startedApp.equals("com.android.calendar")) {
                 if (isFirstFacebook == 0) {
                     isFirstFacebook = 1;
                     facebookB = true;
@@ -258,7 +273,7 @@ public class MyService extends Service {
                 }
             }
 
-            if (startedApp.equals("com.android.calendar")) {
+            if (startedApp.equals("com.twitter.android")) {
                 if (isFirstTwitter == 0) {
                     isFirstTwitter = 1;
                     twitterB = true;
@@ -309,8 +324,6 @@ public class MyService extends Service {
 
         if (isStarted.equals("true") && close.equals("no")) {
             nm.cancelAll();
-                //startService(new Intent(MyService.this, MyService.class));
-
         } else if (isStarted.equals("true") && close.equals("yes")) {
 
             nm.cancelAll();
