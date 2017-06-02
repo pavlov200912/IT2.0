@@ -7,8 +7,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by пк on 27.05.2017.
+
+/*
+    Класс необходимый для работы Фрагментов Tabbed Activity
  */
 
 public class SectionsPageAdapter extends FragmentPagerAdapter {

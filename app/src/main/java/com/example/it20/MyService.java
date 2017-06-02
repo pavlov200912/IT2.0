@@ -24,7 +24,9 @@ import android.util.Log;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-
+/*
+Основной сервис, считающий время в соц. сетях
+ */
 public class MyService extends Service {
     private static final int nSocials=4;
     boolean isFirst=true;
@@ -49,17 +51,18 @@ public class MyService extends Service {
 
     SharedPreferences sharedPreferences;
 
+    //Стандартный метод сервиса
     @Override
     public IBinder onBind(Intent arg0) {
 
         return null;
     }
-
+    //Метод подгрузки данных SP
     public void LoadPreferences() {
 
 
         isStarted = sharedPreferences.getString("compoundButton", "false");
-
+    //ArrayList для социальных сетей создан для удобство добавления их в дальнейшем
         if(isFirst) {
             isFirst=false;
             iSocials.add(Integer.parseInt(sharedPreferences.getString("faceHours", "0")));
@@ -102,6 +105,7 @@ public class MyService extends Service {
 
     }
 
+    //При создании сервиса отсылается уведомление
     @Override
     public void onCreate() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -118,12 +122,14 @@ public class MyService extends Service {
         Log.d("myLogs","onStartCommand");
         super.onStartCommand(intent, flags, startId);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        //Основной Handler приложения контролирующий все события
         serviceControler = new Handler() {
             @SuppressWarnings("deprecation")
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 try {
+
                     if(isStarted.equals("false")){
                      stopSelf();
                     }
@@ -156,6 +162,7 @@ public class MyService extends Service {
                 } catch (NullPointerException nullPointerException) {
 
                 }
+                //Вычисление зависимости
 
                 if (serviceDHours >= 0) {
 
@@ -193,8 +200,9 @@ public class MyService extends Service {
                         }
                     }
                 }
-
+                //Для версий выше 21 метод getRunningTasks() был удален , поэтому необходимо разветвление в реализации
                 if(android.os.Build.VERSION.SDK_INT >= 21) {
+                    //Этот участок не работает , но в замену ему создан класс  WindowChangeDetectingService , заменяющий его функционал
                     final int PROCESS_STATE_TOP = 2;
                     ActivityManager.RunningAppProcessInfo currentInfo = null;
                     Field field = null;
@@ -233,7 +241,7 @@ public class MyService extends Service {
             }
 
         };
-
+        //Для Handler создан отдельный поток, который посылает сообщение handler каждую секунду
         new Thread(new Runnable() {
             public void run() {
                 while (true) {
@@ -251,21 +259,21 @@ public class MyService extends Service {
 
         return START_STICKY;
     }
-    private ActivityManager activityManager() {
 
-        return (ActivityManager) getApplicationContext().getSystemService(
-                Context.ACTIVITY_SERVICE);
-    }
-
+    //Метод проверки запущенного приложения
     public void func1(String startedApp) {
         if (isStarted.equals("true")) {
             if (startedApp.equals("com.facebook.katana") || startedApp.equals("com.android.calendar")) {
+               //Этот if срабатывает если пользователь переключился на facebook , тогда отправляется запрос в timerFacebook  и остается там
+                //  пока пользователь не выйдет из Facebook
                 if (isFirstFacebook == 0) {
                     isFirstFacebook = 1;
                     facebookB = true;
                     faceControl.postDelayed(timerFacebook, 0);
                 }
-            } else {
+            }
+            //После этого Handker освобождается
+            else {
                 if (isFirstFacebook == 1) {
                     facebookB = false;
                     faceControl.removeCallbacks(timerFacebook);
@@ -317,7 +325,7 @@ public class MyService extends Service {
 
     @SuppressLint("InlinedApi")
 
-
+//При уничтожении уведомление также умирает
     public void onDestroy() {
         super.onDestroy();
         String close = sharedPreferences.getString("InTheEnd", "no");
@@ -334,7 +342,7 @@ public class MyService extends Service {
         }
         stopSelf();
     }
-
+//Метод сохранения SP с помощью системы ключ-> значение  в строках
     public void SavePreferences(String key, String value) {
         Editor edit = sharedPreferences.edit();
         edit.putString(key, value);
@@ -359,6 +367,7 @@ public class MyService extends Service {
 
     }
 
+    //Runnable для каждой из соц. сети
     private Runnable timerFacebook = new Runnable() {
 
         public void run() {
@@ -441,6 +450,7 @@ public class MyService extends Service {
 
     };
 
+    //Время изменяется и сохраняется в SP
     private  void setChangeTime(int hou,int min,int sec,String nameS,String nameM,String nameH){
 
         iSocials.set(sec,iSocials.get(sec)+1);

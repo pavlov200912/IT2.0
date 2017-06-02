@@ -19,11 +19,13 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/**
- * Created by пк on 27.05.2017.
+/*
+   Основной фрагмент с таймерами
+   В дальнейшем SP-Shared Preferences
  */
 
 public class Tab1Fragment extends Fragment {
+
     boolean isFirst=true;
     TextView facebookTextHour, twitterTextHour, instagramTextHour, vkontakteTextHour, facebookTextMin,
             twitterTextMin, instagramTextMin, vkontakteTextMin, facebookTextSec, twitterTextSec,
@@ -39,6 +41,7 @@ public class Tab1Fragment extends Fragment {
     CompoundButton compoundButton;
     private static final String TAG="Tab1Fragment";
 
+    //При Resume все данные также подгружаются
     @Override
     public void onResume() {
         LoadPreferences();
@@ -49,7 +52,7 @@ public class Tab1Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.tab1_fragment,container,false);
-
+        //Инициализация
         facebookTextHour = (TextView)view. findViewById(R.id.facebook1);
         facebookTextMin = (TextView)view. findViewById(R.id.facebook2);
         facebookTextSec = (TextView) view.findViewById(R.id.facebook3);
@@ -69,6 +72,7 @@ public class Tab1Fragment extends Fragment {
             compoundButton = (CheckBox) view.findViewById(R.id.startButton);
         }
         if(isFirst){
+            //При первом запуске Сервиса необходимо создать SP
             isFirst=false;
             SavePreferences("compoundButton", "false");
             SavePreferences("compoundButton", "false");
@@ -96,8 +100,10 @@ public class Tab1Fragment extends Fragment {
             isEmpty(vkHours,vkontakteTextHour,"vkHour");
 
         }
+        //Подгрузка данных
         LoadPreferences();
 
+        //Обработчик Switch Button при нажатии запускает сервис и Toast
         compoundButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -107,6 +113,10 @@ public class Tab1Fragment extends Fragment {
                     SavePreferences("compoundButton", "true");
                     Intent intent = new Intent(getActivity(), MyService.class);
                     getActivity().startService(intent);
+                    if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                        Intent intent1 = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                        startActivity(intent1);
+                    }
                     Toast.makeText(getActivity(), "InternetTime запущено", Toast.LENGTH_SHORT).show();
                 } else {
                     SavePreferences("compoundButton", "false");
@@ -116,12 +126,14 @@ public class Tab1Fragment extends Fragment {
         });
         return view;
     }
+    //Стандартный метод для сохранения SP
     public void SavePreferences(String stringName, String stringValue) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SharedPreferences.Editor edit = sharedPreferences.edit();
         edit.putString(stringName, stringValue);
         edit.commit();
     }
+    //Метод обновления всех SP
     public void LoadPreferences() {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -181,6 +193,7 @@ public class Tab1Fragment extends Fragment {
         isEmpty(vkHours,vkontakteTextHour,"vkHour");
     }
 
+    //Функция , изменяющая значение TextView для каждого таймера
     private void isEmpty(String shared, TextView text, String name)
     {
         shared=sharedPreferences.getString(name, "00");
@@ -191,7 +204,7 @@ public class Tab1Fragment extends Fragment {
             text.setText(shared);
         }
     }
-
+    //Функция , используемая для возрождения сервиса
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager

@@ -14,7 +14,9 @@ import android.view.accessibility.AccessibilityEvent;
 import java.util.ArrayList;
 
 /**
- * Created by пк on 02.06.2017.
+ * Т.к в Android>=21 удален метод getRunningTasks() создан AccessibilityService заменяющий его функционал
+ * Работу этого сервиса нужно разрешить в настройках при установке приложения
+ * Настройки-> Специальные возможности -> Услуги -> WindowChangeDetectingService-> Включить Switch кнопку-> OK
  */
 
 public class WindowChangeDetectingService extends AccessibilityService {
@@ -25,7 +27,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
     String preApp="com.android.it20";
     boolean isFirst=true;
     double condition;
-
+    //При подтверждении разрешения на работу сервиса
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
@@ -45,7 +47,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         LoadPreferences();
-
+        //Сервис работает только если в основном активити включена Switch кнопка и API>=21
         if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH && isStarted.equals("true")) {
             LoadPreferences();
 
@@ -62,6 +64,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                     if (isActivity) {
                         timeNow = System.currentTimeMillis();
                         s = componentName.flattenToShortString();
+                        //Выделение package name из componentName
                         for (int i = 0; i < componentName.flattenToShortString().length(); i++) {
                             if (s.charAt(i) != '/') {
                                 appName += "" + s.charAt(i);
@@ -69,6 +72,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                                 break;
                             }
                         }
+                        //Время в милисекундах с 1970 года
                         timeBefore=Long.parseLong(sharedPreferences.getString("time", "0"));
 
                         setChangeTime(preApp,"com.facebook.katana",0,1,2,"faceSeconds","faceMinutes","faceHours");
@@ -77,7 +81,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                         setChangeTime(preApp,"com.vkontakte.android", 9, 10, 11,"vkSeconds","vkMinutes","vkHours");
 
 
-                        if(timeBefore!=0){
+                        if(timeBefore!=0){//Сохранения статистики в SP
                             SavePreferences("allService", String.valueOf((Integer.parseInt(sharedPreferences.getString("allService","0"))+(timeNow-timeBefore))));
                             SavePreferences("servicesec",sharedPreferences.getString("allService","0"));
                         }
@@ -116,10 +120,12 @@ public class WindowChangeDetectingService extends AccessibilityService {
                                 }
                             }
                         }
+
                         SavePreferences("time", String.valueOf(timeNow));
                         Log.d("myLogs", appName);
                         Log.d("myLogs", String.valueOf(timeNow-timeBefore));
                         Log.d("myLogs",preApp);
+                        //Сохраняется предыдущее приложение
                         preApp=appName;
 
                     }
@@ -180,6 +186,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
             iSocials.set(9,Integer.parseInt(sharedPreferences.getString("vkHours", "0")));
             iSocials.set(10,Integer.parseInt(sharedPreferences.getString("vkMinutes", "0")));
             iSocials.set(11,Integer.parseInt(sharedPreferences.getString("vkSeconds", "0")));
+            if(timeBefore!=0){
+                SavePreferences("allService", String.valueOf((Integer.parseInt(sharedPreferences.getString("allService","0"))+(timeNow-timeBefore))));
+                SavePreferences("servicesec",sharedPreferences.getString("allService","0"));
+            }
         }
 
 
@@ -191,6 +201,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
         edit.commit();
 
     }
+    //Сервис сохраняет интервал времени для каждого открытого приложения , и если только что он закрыл социальную сеть данные в SP обновляются
+    //Время которое прошло вычесляется с помощью вычесления разницы между открытием социальной сети и моментом открытия другого приложения
     private  void setChangeTime(String appName,String needApp,int hou,int min,int sec,String nameS,String nameM,String nameH){
 
         if(appName.equals(needApp)) {

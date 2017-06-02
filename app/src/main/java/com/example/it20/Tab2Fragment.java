@@ -19,9 +19,7 @@ import android.widget.Toast;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
-/**
- * Created by User on 2/28/2017.
- */
+
 
 public class Tab2Fragment extends Fragment {
     private static final String TAG = "Tab2Fragment";
@@ -47,7 +45,7 @@ public class Tab2Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab2_fragment,container,false);
-
+        //Инициализация
         facebookTextHour = (TextView)view. findViewById(R.id.facebook1);
         facebookTextMin = (TextView)view. findViewById(R.id.facebook2);
         facebookTextSec = (TextView) view.findViewById(R.id.facebook3);
@@ -72,6 +70,7 @@ public class Tab2Fragment extends Fragment {
         useForDay = (TextView) view.findViewById(R.id.textView17);
         bClear=(Button)view.findViewById(R.id.clear);
         LoadPreferences();
+        //Очистка всех данных и SP
         bClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,15 +123,17 @@ public class Tab2Fragment extends Fragment {
 
             }
         });
+        //Сортировка иконок Соц сетей
         mImage1 = (ImageView) view.findViewById(R.id.imageView5);
         mImage2 = (ImageView) view.findViewById(R.id.imageView6);
         mImage3 = (ImageView) view.findViewById(R.id.imageView7);
         mImage4 = (ImageView) view.findViewById(R.id.imageView8);
-        //TODO переделать
+
         i1=faceDHours*3600+faceDMinutes*60+faceDSeconds;
         i2=twitDHours*3600+twitDMinutes*60+twitDSeconds;
         i3=instDHours*3600+instDMinutes*60+instDSeconds;
         i4=vkDHours*3600+vkDMinutes*60+vkDSeconds;
+        //Чтобы не было 2 одинаковых иконок одновременно
         for(int i=0;i<4;i++) {
             if (i1 == i2 || i1 == i3 || i1 == i4) {
                 i1 += 2;
@@ -201,6 +202,7 @@ public class Tab2Fragment extends Fragment {
 
         return view;
     }
+    //Метод подгрузки данных с помощью SP
     public void LoadPreferences() {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -248,7 +250,7 @@ public class Tab2Fragment extends Fragment {
             SavePreferences("myStatementNow", "low");
         }
         myCondition = sharedPreferences.getString("myStatementNow", "low");
-            //TODO Add colors
+            //Изменения цвета Relative Layout и всех текстовых полей под него (белый/черный как удобнее глазу)
         if (myCondition.equals("low")) {
             myStatementNow.setText("Низкий");
             myStatementNow.setTextColor(Color.parseColor("#ffffff"));
@@ -306,7 +308,7 @@ public class Tab2Fragment extends Fragment {
         }
 
 
-
+        //Вычисление статистики
         if (allSocials.isEmpty()) {
             SavePreferences("allSocials", "0 Часов");
         } else {
@@ -322,6 +324,7 @@ public class Tab2Fragment extends Fragment {
 
 
     }
+    //Метод сохранения SP
     public void SavePreferences(String stringName, String stringValue) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SharedPreferences.Editor edit = sharedPreferences.edit();
@@ -330,6 +333,7 @@ public class Tab2Fragment extends Fragment {
 
     }
 
+    //При Resume Активити все данные подгружаются
     @Override
     public void onResume() {
         super.onResume();

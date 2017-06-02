@@ -22,7 +22,11 @@ import android.view.ViewGroup;
 
 import android.widget.Button;
 import android.widget.TextView;
+/*
 
+Основное Активити , со стандратным обьявлением Tabbed Activity
+
+ */
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG="MainActivity";
