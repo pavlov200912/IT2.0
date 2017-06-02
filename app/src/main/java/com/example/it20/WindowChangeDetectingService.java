@@ -24,6 +24,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
     public static int serviceDHours, serviceDMinutes, serviceDSeconds;
     long timeNow=0,timeBefore=0;
     String preApp="com.android.it20";
+    boolean isFirst=true;
 
     @Override
     protected void onServiceConnected() {
@@ -104,23 +105,41 @@ public class WindowChangeDetectingService extends AccessibilityService {
     public void LoadPreferences() {
 
         isStarted = sharedPreferences.getString("compoundButton", "false");
+        if(isFirst) {
+            isFirst=false;
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("faceHours", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("faceMinutes", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("faceSeconds", "0")));
 
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("faceHours", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("faceMinutes", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("faceSeconds", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("twitHours", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("twitMinutes", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("twitSeconds", "0")));
 
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("twitHours", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("twitMinutes", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("twitSeconds", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("instaHours", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("instaMinutes", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("instaSeconds", "0")));
 
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("instaHours", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("instaMinutes", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("instaSeconds", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("vkHours", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("vkMinutes", "0")));
+            iSocials.add(Integer.parseInt(sharedPreferences.getString("vkSeconds", "0")));
+        }
+        else{
+            iSocials.set(0,Integer.parseInt(sharedPreferences.getString("faceHours", "0")));
+            iSocials.set(1,Integer.parseInt(sharedPreferences.getString("faceMinutes", "0")));
+            iSocials.set(2,Integer.parseInt(sharedPreferences.getString("faceSeconds", "0")));
 
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("vkHours", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("vkMinutes", "0")));
-        iSocials.add(Integer.parseInt(sharedPreferences.getString("vkSeconds", "0")));
+            iSocials.set(3,Integer.parseInt(sharedPreferences.getString("twitHours", "0")));
+            iSocials.set(4,Integer.parseInt(sharedPreferences.getString("twitMinutes", "0")));
+            iSocials.set(5,Integer.parseInt(sharedPreferences.getString("twitSeconds", "0")));
 
+            iSocials.set(6,Integer.parseInt(sharedPreferences.getString("instaHours", "0")));
+            iSocials.set(7,Integer.parseInt(sharedPreferences.getString("instaMinutes", "0")));
+            iSocials.set(8,Integer.parseInt(sharedPreferences.getString("instaSeconds", "0")));
+
+            iSocials.set(9,Integer.parseInt(sharedPreferences.getString("vkHours", "0")));
+            iSocials.set(10,Integer.parseInt(sharedPreferences.getString("vkMinutes", "0")));
+            iSocials.set(11,Integer.parseInt(sharedPreferences.getString("vkSeconds", "0")));
+        }
         serviceDSeconds = Integer.parseInt(sharedPreferences.getString("servicesec", "0"));
         serviceDMinutes = Integer.parseInt(sharedPreferences.getString("servicemin", "0"));
         serviceDHours = Integer.parseInt(sharedPreferences.getString("servicehour", "0"));
