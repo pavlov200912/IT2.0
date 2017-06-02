@@ -11,6 +11,8 @@ import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,7 +24,11 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class MyService extends Service {
     private static final int nSocials=4;
@@ -173,65 +179,41 @@ public class MyService extends Service {
                     }
                 }
 
-                ActivityManager am = (ActivityManager) getApplicationContext().getSystemService(Activity.ACTIVITY_SERVICE);
-                startedApp = am.getRunningTasks(1).get(0).topActivity.getPackageName();
-
-                Log.d("myLogs",startedApp);
-                if (isStarted.equals("true")) {
-                    if (startedApp.equals("com.facebook.katana") || startedApp.equals("com.facebook.lite")) {
-                        if (isFirstFacebook == 0) {
-                            isFirstFacebook = 1;
-                            facebookB = true;
-                            faceControl.postDelayed(timerFacebook, 0);
-                        }
-                    } else {
-                        if (isFirstFacebook == 1) {
-                            facebookB = false;
-                            faceControl.removeCallbacks(timerFacebook);
-                            isFirstFacebook = 0;
+                if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    final int PROCESS_STATE_TOP = 2;
+                    ActivityManager.RunningAppProcessInfo currentInfo = null;
+                    Field field = null;
+                    try {
+                        field = ActivityManager.RunningAppProcessInfo.class.getDeclaredField("processState");
+                    } catch (Exception ignored) {
+                    }
+                    ActivityManager am = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+                    List<ActivityManager.RunningAppProcessInfo> appList = am.getRunningAppProcesses();
+                    for (ActivityManager.RunningAppProcessInfo app : appList) {
+                        if (app.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                                && app.importanceReasonCode == ActivityManager.RunningAppProcessInfo.REASON_UNKNOWN) {
+                            Integer state = null;
+                            try {
+                                state = field.getInt(app);
+                            } catch (Exception e) {
+                            }
+                            if (state != null && state == PROCESS_STATE_TOP) {
+                                currentInfo = app;
+                                break;
+                            }
                         }
                     }
 
-                    if (startedApp.equals("com.android.calendar")) {
-                        if (isFirstTwitter == 0) {
-                            isFirstTwitter = 1;
-                            twitterB = true;
-                            twitControl.postDelayed(timerTwitter, 0);
-                        }
-                    } else {
-                        if (isFirstTwitter == 1) {
-                            twitterB = false;
-                            twitControl.removeCallbacks(timerTwitter);
-                            isFirstTwitter = 0;
-                        }
-                    }
-                    if (startedApp.equals("com.instagram.android")) {
-                        if (isFirstInstagram == 0) {
-                            isFirstInstagram = 1;
-                            instagramB = true;
-                            instControl.postDelayed(timerInstagram, 0);
-                        }
-                    } else {
-                        if (isFirstInstagram == 1) {
-                            instagramB = false;
-                            instControl.removeCallbacks(timerInstagram);
-                            isFirstInstagram = 0;
-                        }
-                    }
-                    if (startedApp.equals("com.vkontakte.android")) {
-                        if (isFirstVkontakte == 0) {
-                            isFirstVkontakte = 1;
-                            vkontakteB = true;
-                            vkControl.postDelayed(timerVkontakte, 0);
-                        }
-                    } else {
-                        if (isFirstVkontakte == 1) {
-                            vkontakteB = false;
-                            vkControl.removeCallbacks(timerVkontakte);
-                            isFirstVkontakte = 0;
-                        }
-                    }
+                    func1(String.valueOf(currentInfo));
                 }
+                else {
+                    ActivityManager am = (ActivityManager) getApplicationContext().getSystemService(Activity.ACTIVITY_SERVICE);
+                    startedApp = am.getRunningTasks(1).get(0).topActivity.getPackageName();
+                    Log.d("myLogs",startedApp);
+                    func1(startedApp);
+                }
+
+
 
             }
 
@@ -253,6 +235,69 @@ public class MyService extends Service {
         }).start();
 
         return START_STICKY;
+    }
+    private ActivityManager activityManager() {
+
+        return (ActivityManager) getApplicationContext().getSystemService(
+                Context.ACTIVITY_SERVICE);
+    }
+
+    public void func1(String startedApp) {
+        if (isStarted.equals("true")) {
+            if (startedApp.equals("com.facebook.katana") || startedApp.equals("com.facebook.lite")) {
+                if (isFirstFacebook == 0) {
+                    isFirstFacebook = 1;
+                    facebookB = true;
+                    faceControl.postDelayed(timerFacebook, 0);
+                }
+            } else {
+                if (isFirstFacebook == 1) {
+                    facebookB = false;
+                    faceControl.removeCallbacks(timerFacebook);
+                    isFirstFacebook = 0;
+                }
+            }
+
+            if (startedApp.equals("com.android.calendar")) {
+                if (isFirstTwitter == 0) {
+                    isFirstTwitter = 1;
+                    twitterB = true;
+                    twitControl.postDelayed(timerTwitter, 0);
+                }
+            } else {
+                if (isFirstTwitter == 1) {
+                    twitterB = false;
+                    twitControl.removeCallbacks(timerTwitter);
+                    isFirstTwitter = 0;
+                }
+            }
+            if (startedApp.equals("com.instagram.android")) {
+                if (isFirstInstagram == 0) {
+                    isFirstInstagram = 1;
+                    instagramB = true;
+                    instControl.postDelayed(timerInstagram, 0);
+                }
+            } else {
+                if (isFirstInstagram == 1) {
+                    instagramB = false;
+                    instControl.removeCallbacks(timerInstagram);
+                    isFirstInstagram = 0;
+                }
+            }
+            if (startedApp.equals("com.vkontakte.android")) {
+                if (isFirstVkontakte == 0) {
+                    isFirstVkontakte = 1;
+                    vkontakteB = true;
+                    vkControl.postDelayed(timerVkontakte, 0);
+                }
+            } else {
+                if (isFirstVkontakte == 1) {
+                    vkontakteB = false;
+                    vkControl.removeCallbacks(timerVkontakte);
+                    isFirstVkontakte = 0;
+                }
+            }
+        }
     }
 
     @SuppressLint("InlinedApi")
