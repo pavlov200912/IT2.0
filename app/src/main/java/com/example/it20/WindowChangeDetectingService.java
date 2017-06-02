@@ -21,10 +21,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
     SharedPreferences sharedPreferences;
     String isStarted="false";
     public static ArrayList<Integer> iSocials=new ArrayList<>();
-    public static int serviceDHours, serviceDMinutes, serviceDSeconds;
     long timeNow=0,timeBefore=0;
     String preApp="com.android.it20";
     boolean isFirst=true;
+    double condition;
 
     @Override
     protected void onServiceConnected() {
@@ -72,12 +72,50 @@ public class WindowChangeDetectingService extends AccessibilityService {
                         timeBefore=Long.parseLong(sharedPreferences.getString("time", "0"));
 
                         setChangeTime(preApp,"com.facebook.katana",0,1,2,"faceSeconds","faceMinutes","faceHours");
-                        setChangeTime(preApp,"com.twitter.android",0+3,1+3,2+3,"twitSeconds","twitMinutes","twitHours");
-                        setChangeTime(preApp,"com.instagram.android",3+3,4+3,5+3,"instaSeconds","instaMinutes","instaHours");
-                        setChangeTime(preApp,"com.vkontakte.android",6+3,7+3,8+3,"vkSeconds","vkMinutes","vkHours");
+                        setChangeTime(preApp,"com.twitter.android", 3, 4, 5,"twitSeconds","twitMinutes","twitHours");
+                        setChangeTime(preApp,"com.instagram.android", 6, 7, 8,"instaSeconds","instaMinutes","instaHours");
+                        setChangeTime(preApp,"com.vkontakte.android", 9, 10, 11,"vkSeconds","vkMinutes","vkHours");
 
 
+                        if(timeBefore!=0){
+                            SavePreferences("allService", String.valueOf((Integer.parseInt(sharedPreferences.getString("allService","0"))+(timeNow-timeBefore))));
+                            SavePreferences("servicesec",sharedPreferences.getString("allService","0"));
+                        }
 
+                        condition=Double.parseDouble(sharedPreferences.getString("allSocials","0"))/(double)Double.parseDouble(sharedPreferences.getString("allService","0"));
+                        if (condition <= 0.2) {
+
+                            SavePreferences("myStatementNow", "low");
+
+                        } else {
+
+                            if (condition > 0.2 && condition < 0.35) {
+
+                                SavePreferences("myStatementNow", "Average");
+
+                            } else {
+
+                                if (condition >= 0.35 && condition < 0.5) {
+
+                                    SavePreferences("myStatementNow", "attention");
+
+                                } else {
+
+                                    if (condition >= 0.5 && condition < 0.75) {
+
+                                        SavePreferences("myStatementNow", "Addicted");
+
+                                    } else {
+
+                                        if (condition >= 0.75) {
+
+                                            SavePreferences("myStatementNow", "DANGER");
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         SavePreferences("time", String.valueOf(timeNow));
                         Log.d("myLogs", appName);
                         Log.d("myLogs", String.valueOf(timeNow-timeBefore));
@@ -111,6 +149,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
             iSocials.add(Integer.parseInt(sharedPreferences.getString("faceMinutes", "0")));
             iSocials.add(Integer.parseInt(sharedPreferences.getString("faceSeconds", "0")));
 
+            SavePreferences("allSocials","0");
+            SavePreferences("allService","0");
+
             iSocials.add(Integer.parseInt(sharedPreferences.getString("twitHours", "0")));
             iSocials.add(Integer.parseInt(sharedPreferences.getString("twitMinutes", "0")));
             iSocials.add(Integer.parseInt(sharedPreferences.getString("twitSeconds", "0")));
@@ -140,9 +181,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
             iSocials.set(10,Integer.parseInt(sharedPreferences.getString("vkMinutes", "0")));
             iSocials.set(11,Integer.parseInt(sharedPreferences.getString("vkSeconds", "0")));
         }
-        serviceDSeconds = Integer.parseInt(sharedPreferences.getString("servicesec", "0"));
-        serviceDMinutes = Integer.parseInt(sharedPreferences.getString("servicemin", "0"));
-        serviceDHours = Integer.parseInt(sharedPreferences.getString("servicehour", "0"));
+
 
     }
 
@@ -159,6 +198,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
             if(timeBefore!=0){
                 long ds=(timeNow-timeBefore)/1000,dm=iSocials.get(min),dh=iSocials.get(hou);
                 ds+=iSocials.get(sec);
+                SavePreferences("allSocials", String.valueOf((Double.parseDouble(sharedPreferences.getString("allSocials","0"))+ds)/(double)3600));
                 if(ds>=60)
                 {
                     dm=ds/60;
